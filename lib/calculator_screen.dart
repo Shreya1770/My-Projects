@@ -6,9 +6,13 @@ class CalculatorScreen extends StatefulWidget {
 
   @override
   State<CalculatorScreen> createState() => _CalculatorScreenState();
+ 
 }
 
 class _CalculatorScreenState extends State<CalculatorScreen> {
+   String num1="";
+  String operator="";
+  String num2="";
   @override
   Widget build(BuildContext context) {
     final screenSize=MediaQuery.of(context).size;
@@ -26,7 +30,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               child: Container(
                 alignment: Alignment.bottomRight,
                 padding:  const EdgeInsets.all(16.0),
-                child: Text('0',
+                child: Text('$num1$operator$num2'.isEmpty?"0":'$num1$operator$num2',
                               style: TextStyle(
                 fontSize: 35,
                 fontWeight: FontWeight.bold
@@ -72,15 +76,13 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           ?Colors.orange
           :Colors.black87,
           shape: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(100.0),
+            borderRadius: BorderRadius.circular(50.0),
             borderSide: const BorderSide(
               color: Colors.white24,
             ),
             ),
             child: InkWell(
-              onTap: (){
-
-              },
+              onTap: ()=>onBtnTap(value),
               child: Center(
                 child: Text(value,
                 style: TextStyle(
@@ -93,9 +95,91 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             ),
           ),
           );
+  }
+          void onBtnTap( String value){
+            if(value==Btn.clr){
+              setState(() {
+                num1="";
+                num2="";
+                operator="";
+              });
+            }
+            else if(value==Btn.del){
+              if( num2.isNotEmpty){
+                setState(() {
+                  num2=num2.substring(0,num2.length-1);
+                });
+              }
+              else if(operator.isNotEmpty){
+                setState(() {
+                  operator="";
+                });
+              }else{
+                setState(() {
+                  num1=num1.substring(0,num1.length-1);
+                });
+              }
+            }
+            else if([Btn.add,Btn.subtract,Btn.multiply,Btn.divide].contains(value)){
+              if(operator.isNotEmpty && num2.isNotEmpty){
+                calculateResult();
+              }
+              setState(() {
+                operator=value;
+              });
+            }
+            else if(value==Btn.calculate){
+              calculateResult();
+            }
+            else{
+              if(operator.isEmpty){
+                num1+=value;
+              }
+              else{
+                num2+=value;
+              }
+            }
+            
+
+          }
+          void calculateResult(){
+            if(num1.isEmpty||operator.isEmpty || num2.isEmpty)return;
+
+          double n1=double.parse(num1);
+          double n2=double.parse(num2);
+          double result=0.0;
+
+          switch(operator){
+            case Btn.add:
+            result=n1+n2;
+            break;
+            case Btn.subtract:
+            result=n1-n2;
+            break;
+            case Btn.multiply:
+            result=n1*n2;
+            break;
+            case Btn.divide:
+            if(n2!=0)result=n1/n2;
+            else{
+              print("division by zero is not possible");
+            }
+            break;
+            case Btn.per:
+            result=(n1*n2)/100;
+            break;
+          }
+          setState(() {
+            num1=result.toStringAsFixed(2).replaceAll(RegExp(r"\.0+$"),"");
+            num2="";
+            operator="";
+          });
+            
+
+          }
+        
         
       
     
   
   }
-}

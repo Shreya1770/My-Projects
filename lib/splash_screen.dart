@@ -27,6 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
+              
               'assets/calculator.jpg',
               height: 400,
               width: 400,
